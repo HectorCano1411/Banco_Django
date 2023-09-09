@@ -1,5 +1,7 @@
 # # Banco en Línea - README
-# Banco en Línea![Screenshot 2023-09-09 133206](https://github.com/HectorCano1411/Banco_en_Linea_Django_Python/assets/123791914/e0daa570-ee32-4233-ae65-b30a8e2aeeb3)
+![Screenshot 2023-09-09 133206](https://github.com/HectorCano1411/Banco_Django/assets/123791914/f67472d4-5e06-46cc-a0e5-8302c019a88f)
+
+# Banco en Línea
 
 # Insignias
 # Estado del Proyecto
@@ -24,16 +26,16 @@
 
 # Características de la Aplicación y Demostración
 # Inicio de Sesión Personalizado: Los usuarios pueden iniciar sesión utilizando su RUT y contraseña. La aplicación verifica la autenticación y gestiona el bloqueo de cuentas después de varios intentos fallidos.
-# ![Screenshot 2023-09-09 150953](https://github.com/HectorCano1411/Banco_en_Linea_Django_Python/assets/123791914/bd44f22b-a8d7-4266-b860-1b00964d746a)
+![Screenshot 2023-09-09 150953](https://github.com/HectorCano1411/Banco_Django/assets/123791914/ae97f9d9-0597-4bf0-a6e3-636fedee3f61)
 
 # Visualización de Detalles de la Cuenta: Los usuarios pueden ver los detalles de su cuenta, incluyendo saldo disponible, saldo contable, retenciones, total de cargos y total de abonos.
-# ![Screenshot 2023-09-09 150752](https://github.com/HectorCano1411/Banco_en_Linea_Django_Python/assets/123791914/4cdcedda-cdf5-40ed-9bc9-4b3705f02e38)
+![Screenshot 2023-09-09 180317](https://github.com/HectorCano1411/Banco_Django/assets/123791914/53c56e81-d17d-4521-81dc-177b555accd3)
 
 # Desbloqueo de Cuentas (Para Administradores): Los administradores pueden desbloquear cuentas de usuario bloqueadas a través de una función dedicada.
-# ![Screenshot 2023-09-09 151027](https://github.com/HectorCano1411/Banco_en_Linea_Django_Python/assets/123791914/738472e0-bb24-4995-8de3-f67694d7b62a)
+![Screenshot 2023-09-09 151027](https://github.com/HectorCano1411/Banco_Django/assets/123791914/8daafac2-3b86-41e3-b8e7-d8c7f4c229ce)
 
-# Fecha y Hora Actual: La aplicación muestra la fecha y hora actual.
-# ![Screenshot 2023-09-09 151050](https://github.com/HectorCano1411/Banco_en_Linea_Django_Python/assets/123791914/09357a3e-cb63-49b4-88ae-5b22f6650785)
+# Sefuimiento y control de inicio de sesion
+![Screenshot 2023-09-09 151050](https://github.com/HectorCano1411/Banco_Django/assets/123791914/8b663a5b-d7ef-4187-a9a3-c4619b3f08be)
 
 # Demostración: Enlace a la Demo
 
