@@ -69,7 +69,7 @@
 # source   venv/bin/activate
 # Después de activar el entorno virtual, verás el nombre del entorno virtual en el indicador de tu terminal, lo que indica que el entorno virtual está activo. Esto significa que cualquier paquete o herramienta que instales ahora se instalará en el entorno virtual en lugar de en el sistema global.
 
-# Clona el repositorio desde Ubuntu: sudo git clone https://github.com/HectorCano1411/Banco_en_Linea_Django_Python
+# Clona el repositorio desde Ubuntu: sudo git clone https://github.com/HectorCano1411/Banco_Django
 # Para levantar un proyecto de Django en Ubuntu, primero debes asegurarte de que estás en el directorio raíz de tu proyecto Django (donde se encuentra el archivo manage.py). Luego, puedes usar el siguiente comando para iniciar el servidor de desarrollo de Django:
 # python manage.py runserver
 # Asegúrate de tener activado tu entorno virtual (si estás utilizando uno) antes de ejecutar este comando. Esto iniciará el servidor de desarrollo de Django en el puerto predeterminado 8000. Si deseas especificar un puerto diferente, puedes hacerlo de la siguiente manera:
