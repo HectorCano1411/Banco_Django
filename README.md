@@ -34,7 +34,7 @@
 # Desbloqueo de Cuentas (Para Administradores): Los administradores pueden desbloquear cuentas de usuario bloqueadas a través de una función dedicada.
 ![Screenshot 2023-09-09 151027](https://github.com/HectorCano1411/Banco_Django/assets/123791914/8daafac2-3b86-41e3-b8e7-d8c7f4c229ce)
 
-# Sefuimiento y control de inicio de sesion
+# Seguimiento y control de inicio de sesion
 ![Screenshot 2023-09-09 151050](https://github.com/HectorCano1411/Banco_Django/assets/123791914/8b663a5b-d7ef-4187-a9a3-c4619b3f08be)
 
 # Demostración: Enlace a la Demo
