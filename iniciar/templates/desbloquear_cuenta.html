@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Desbloquear Cuenta</title>
+</head>
+<body>
+    <h1>Desbloquear Cuenta de Usuario</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        <p>¿Está seguro de que desea desbloquear la cuenta de {{ usuario.Nombres }} {{ usuario.Apellidos }} (RUT: {{ usuario.Rut }})?</p>
+        <input type="submit" value="Desbloquear">
+    </form>
+
+    <a href="{% url 'custom_login' %}">Volver a la página de inicio de sesión</a>
+</body>
+</html>

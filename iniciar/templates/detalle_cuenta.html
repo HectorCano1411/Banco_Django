@@ -1,0 +1,144 @@
+ {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultar Cuentas</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/stylesDetalle.css' %}"> 
+</head>
+<body>
+    
+    <nav class="navbar  navbar-expand-lg navbar-navbar-accordion-body bg-bg-secondary"style="background: #002464; color:white;">
+        <a class="navbar-brand" href="#">Consultar Cuentas</a>
+      
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Movimientos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Cartola Histórica</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Cartola de Intereses</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Liquidación de Intereses</a>
+                </li>
+                
+            </ul>
+        </div>
+        
+        <div class="navbar-nav ml-auto">
+            <a class="nav-item nav-link" href="{% url 'custom_login' %}">Cerrar Sesión</a>
+        </div>
+    </nav>
+
+    <h1>Saldo de la cuenta </h1>
+    <p>Fecha actual: {{ fecha_actual|date:"m/d/Y H:i:s" }}</p>
+
+
+   
+   
+    <div class="container mt-5">
+        {% if usuario %}
+            <p>Cuenta N° {{ usuario.NumeroCuenta }} (CLP)</p>
+            <p>SELECCIONAR OTRA CUENTA > </p>
+            <select class="form-control">
+                <option value="cuenta1">Cuenta 1</option>
+                <option value="cuenta2">Cuenta 2</option>
+                <option value="cuenta3">Cuenta 3</option>
+            </select>
+        {% else %}
+            <p>No se encontró información de la cuenta.</p>
+        {% endif %}
+    </div>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Primera columna -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Saldo Disponible Cuenta Corriente</h5>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <i class="fas fa-dollar-sign mr-4"></i>
+                            </div>
+                            <p class="card-text">{{ usuario.SaldoCuentaCorriente }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Saldo Contable</h5>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <i class="fas fa-dollar-sign mr-4"></i>
+                            </div>
+                            <p class="card-text">{{ usuario.SaldoContable }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Retenciones 24H <i class="fas fa-question-circle"></i></h5>
+                        <p class="card-text"></p>
+                    </div>
+                </div>
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Retenciones 48H <i class="fas fa-question-circle"></i></h5>
+                        <p class="card-text"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <!-- Segunda columna -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Saldo Disponible Línea de Crédito <i class="fas fa-question-circle"></i></h5>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <i class="fas fa-dollar-sign mr-4"></i>
+                            </div>
+                            <p class="card-text">{{ usuario.SaldoLineaCredito }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Cargos <i class="fas fa-dollar-sign"></i></h5>
+                        <p class="card-text">{{ usuario.TotalCargos }}</p>
+                    </div>
+                </div>
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Abonos <i class="fas fa-dollar-sign"></i></h5>
+                        <p class="card-text">{{ usuario.TotalAbonos }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container mt-5">
+        <h2>SIMULA AQUÍ:</h2>
+    </div>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Tienes un crédito de consumo preaprobado por $14.450.000, con abono inmediato en tu cuenta corriente.</h5>
+            </div>
+        </div>
+    </div>
+  
+</body>
+
+
+</html>
+
+
