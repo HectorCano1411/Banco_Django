@@ -33,7 +33,7 @@
                     {% if messages %}
                     <ul>
                         {% for message in messages %}
-                            <li>{{ message }}</li>
+                            <li style="color:red;">{{ message }}</li>
                         {% endfor %}
                     </ul>
                     {% endif %}
@@ -52,12 +52,13 @@
                             <input type="password" name="clave" required class="form-control" placeholder="Clave">
                         </div>
                         <button type="submit" class="btn btn-primary">Ingresar</button>                    
+                        <div>
+                            <p id="clave">
+                                <a href="https://login.portal.bancochile.cl/bancochile-web/persona/login/index.html#/olvido-clave-persona">> Olvido Clave</a>
+                            </p>
+                        </div>
                     </form>
-                    <div>
-                        <p id="clave">
-                            <a href="https://login.portal.bancochile.cl/bancochile-web/persona/login/index.html#/olvido-clave-persona">> Olvido Clave</a>
-                        </p>
-                    </div>
+                    
                     
                     </div>
                 </div>

@@ -38,10 +38,7 @@ def custom_login(request):
         try:
             usuario = Usuario.objects.get(Rut=rut)
             
-            # Verificar el estado de la cuenta
-            if not usuario.Estado:
-                messages.warning(request, 'Tu cuenta está bloqueada. Contacta al soporte.')
-                return redirect('login.html')  # Cambia 'pagina_principal' al nombre de tu página principal
+            
 
             if usuario.Clave == clave:
                 usuario.intentos_fallidos = 0  # Reiniciar intentos fallidos

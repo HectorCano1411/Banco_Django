@@ -80,8 +80,11 @@
 # pip install -r requirements.txt
 # Asegúrate de que tu entorno virtual (si estás utilizando uno) esté activado antes de ejecutar este comando para que las bibliotecas se instalen en el entorno virtual en lugar de globalmente en tu sistema. Si no tienes un entorno virtual configurado, es una buena práctica crear uno antes de instalar las dependencias de tu proyecto Django.
 # Para desactivar el entorno virtual cuando hayas terminado de trabajar en él, simplemente ejecuta el comando deactivate en la misma terminal:
+# Credenciales de adeministrador
+# hector 123
 
-# Credenciales para entrar al administrador
+
+# Credenciales de usuario
 # RUT 12345678
 # CLAVE 12345678
 
