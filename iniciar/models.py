@@ -1,33 +1,5 @@
 from django.db import models
 
-class Usuario(models.Model):
-    Rut = models.CharField(max_length=12)
-    Nombres = models.CharField(max_length=100)
-    Apellidos = models.CharField(max_length=100)
-    Clave = models.CharField(max_length=128)
-    NumeroCuenta = models.CharField(max_length=20)
-    SaldoContable = models.DecimalField(max_digits=10, decimal_places=2)
-    SaldoCuentaCorriente = models.DecimalField(max_digits=10, decimal_places=2)
-    SaldoLineaCredito = models.DecimalField(max_digits=10, decimal_places=2)
-    TotalCargos = models.DecimalField(max_digits=10, decimal_places=2)
-    TotalAbonos = models.DecimalField(max_digits=10, decimal_places=2)
-    Estado = models.BooleanField(default=True)
-    intentos_fallidos = models.PositiveIntegerField(default=0)  
-    def __str__(self):
-        return f'Usuario: {self.id} {self.Nombres} {self.Rut} '
-
-
-class SecurityAudit(models.Model):
-    timestamp = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-    event_type = models.CharField(max_length=100)
-    details = models.TextField()
-
-    
-    def __str__(self):
-        return f'{self.timestamp} - {self.user.Nombres} {self.user.Apellidos} - {self.event_type}'
-
-
 
 from django.db import models
 
@@ -47,3 +19,32 @@ class NuevoRegistro(models.Model):
 
     def __str__(self):
         return f'Usuario: {self.id} {self.Nombres} {self.rut} '
+
+
+class SecurityAudit(models.Model):
+    timestamp = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(NuevoRegistro, on_delete=models.CASCADE)
+    event_type = models.CharField(max_length=100)
+    details = models.TextField()
+
+    def __str__(self):
+        return f'{self.timestamp} - {self.user.Nombres} {self.user.Apellidos} - {self.event_type}'
+
+    def create_security_audit(self, event_type, details):
+        # Crea un registro de auditoría cuando se llama a este método
+        SecurityAudit.objects.create(
+            user=self.user,  # Asocia el usuario actual al registro de auditoría
+            event_type=event_type,
+            details=details
+        )
+
+    def save(self, *args, **kwargs):
+        # Antes de guardar el objeto SecurityAudit, verifica si hay cambios en el campo Estado
+        if self.pk:
+            original_obj = SecurityAudit.objects.get(pk=self.pk)
+            if original_obj.user.Estado != self.user.Estado:
+                # Si el campo Estado ha cambiado, crea un registro de auditoría
+                event_type = 'Cambio de Estado'
+                details = f'Estado cambiado de {original_obj.user.Estado} a {self.user.Estado}'
+                self.create_security_audit(event_type, details)
+        super().save(*args, **kwargs)

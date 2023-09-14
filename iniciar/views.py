@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password ,check_password
 from django.shortcuts import render, redirect
 from django.contrib import messages 
 from django.db import IntegrityError
@@ -32,7 +32,7 @@ def registro_usuario(request):
         if form.is_valid():
             usuario = form.save(commit=False)  # Guarda el usuario sin commit
             clave = form.cleaned_data['clave1']  # Obtiene la contraseña encriptada
-            usuario.Clave = (clave)
+            usuario.Clave = make_password(clave)
 
             try:
                 usuario.save()  # Intenta guardar el usuario en la base de datos
@@ -60,8 +60,8 @@ def custom_login(request):
             usuario = NuevoRegistro.objects.get(rut=rut)
             if not usuario.Estado:
                 messages.warning(request, 'Tu cuenta está bloqueada. Contacta al soporte.')
-                return redirect('detalle_cuenta.html')  # Cambia 'pagina_principal' al nombre de tu página principal
-            if usuario.Clave == clave:
+                return render(request, 'login.html')
+            if check_password(clave, usuario.Clave):
                 usuario.intentos_fallidos = 0  # Reiniciar intentos fallidos
                 usuario.save()
                 return redirect('detalle_cuenta', usuario_id=usuario.id)
@@ -74,14 +74,12 @@ def custom_login(request):
                 usuario.Estado = False
                 usuario.save()
                 messages.error(request, 'Tu cuenta ha sido bloqueada. Por favor, contacta al soporte.')
-                return redirect('custom_login')
                 
             usuario.save()  # Guardar cambios en los intentos fallidos
         except NuevoRegistro.DoesNotExist:
             messages.error(request, 'Usuario no encontrado')
 
     return render(request, 'login.html')
-
 @handle_errors
 def detalle_cuenta(request, usuario_id):
     try:
@@ -97,21 +95,3 @@ def detalle_cuenta(request, usuario_id):
     
     return redirect('custom_login')
 
-@login_required  # Asegura que solo los administradores autenticados puedan acceder a esta vista
-def desbloquear_cuenta(request, usuario_id):
-    try:
-        usuario = NuevoRegistro.objects.get(id=usuario_id)  
-        if not usuario.Estado:
-            if request.method == 'POST':
-                # Asegurarse de que el formulario fue enviado y confirmar desbloqueo
-                usuario.Estado = True  # Desbloquear la cuenta
-                usuario.intentos_fallidos = 0  # Reiniciar intentos fallidos
-                usuario.save()
-                messages.success(request, f'La cuenta de {usuario.Nombres} {usuario.Apellidos} ha sido desbloqueada.')
-                return redirect('custom_login')               
-        else:
-            messages.warning(request, 'La cuenta ya está desbloqueada.')
-            return redirect('custom_login')  
-    except NuevoRegistro.DoesNotExist:
-        messages.error(request, 'Usuario no encontrado')
-        return redirect('custom_login') 
