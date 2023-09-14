@@ -2,20 +2,16 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
 from .models import NuevoRegistro
 import re
 
 
-import re
-from django import forms
-from django.contrib.auth.hashers import make_password
-from django.core.exceptions import ValidationError
 
 class RegistroNuevoForm(forms.ModelForm):
     rut = forms.CharField(max_length=12, label='RUT', widget=forms.TextInput(attrs={'placeholder': 'Ej:12345678-9'}))
     clave1 = forms.CharField(widget=forms.PasswordInput, label='Contraseña')
-    clave2 = forms.CharField(widget=forms.PasswordInput, label='Confirmar Contraseña')
+    clave2 = forms.CharField(label='Confirmar',widget=forms.PasswordInput(attrs={'placeholder': 'Contraseña'}))    
     Nombres = forms.CharField(max_length=100, label='Nombres')
     Apellidos = forms.CharField(max_length=100, label='Apellidos')
    
@@ -66,27 +62,6 @@ class RegistroNuevoForm(forms.ModelForm):
         if commit:
             usuario.save()
         return usuario
-
-
-class RegistroFormulario(forms.Form):
-    # Otros campos del formulario
-
-    def validate_password_complexity(self, password):
-        if not re.search(r'[A-Z]', password):
-            raise ValidationError("La contraseña debe contener al menos una letra mayúscula.")
-        if not re.search(r'[a-z]', password):
-            raise ValidationError("La contraseña debe contener al menos una letra minúscula.")
-        if not re.search(r'[0-9]', password):
-            raise ValidationError("La contraseña debe contener al menos un número.")
-        if not re.search(r'[!@#$%^&*()_+{}[\]:;<>,.?~\\-]', password):
-            raise ValidationError("La contraseña debe contener al menos un carácter especial.")
-
-    password = forms.CharField(
-        label='Contraseña',
-        widget=forms.PasswordInput,
-        min_length=8, 
-        validators=[validate_password_complexity]  
-    )
 
 
 
