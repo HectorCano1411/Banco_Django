@@ -51,13 +51,13 @@
                             </span>
                             <input type="password" name="clave" required class="form-control" placeholder="Clave">
                         </div>
-                        <button type="submit" class="btn btn-primary">Ingresar</button>                    
-                        <div>
-                            <p id="clave">
-                                <a href="https://login.portal.bancochile.cl/bancochile-web/persona/login/index.html#/olvido-clave-persona">> Olvido Clave</a>
-                            </p>
-                        </div>
+                        <button type="submit" class="btn btn-primary">Ingresar</button>
+                        <p id="clave">
+                            <a href="https://login.portal.bancochile.cl/bancochile-web/persona/login/index.html#/olvido-clave-persona">> Olvido Clave</a>
+                        </p>
                     </form>
+                    
+                    <p>¿No tienes una cuenta? <a href="{% url 'registro_usuario' %}">Regístrate aquí</a></p>
                     
                     
                     </div>

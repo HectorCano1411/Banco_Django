@@ -1,14 +1,11 @@
-
-
-from datetime import datetime
-
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
+from django.contrib.auth.hashers import make_password
 from django.shortcuts import render, redirect
+from django.contrib import messages 
 from django.db import IntegrityError
-from .models import Usuario
-from .models import SecurityAudit
-
+from .forms import RegistroNuevoForm
+from .models import NuevoRegistro
+from datetime import datetime
 
 def handle_errors(view_func):
     def wrapped_view(request, *args, **kwargs):
@@ -18,7 +15,7 @@ def handle_errors(view_func):
             # Manejo de errores de integridad de la base de datos
             error_message = str(e)
             return render(request, 'error.html', {'error_message': error_message})
-        except Usuario.DoesNotExist:
+        except NuevoRegistro.DoesNotExist:
             # Manejo de errores para usuario no encontrado
             error_message = 'Usuario no encontrado'
             return render(request, 'error.html', {'error_message': error_message})
@@ -29,30 +26,45 @@ def handle_errors(view_func):
 
     return wrapped_view
 
-@handle_errors
+def registro_usuario(request):
+    if request.method == 'POST':
+        form = RegistroNuevoForm(request.POST)
+        if form.is_valid():
+            usuario = form.save(commit=False)  # Guarda el usuario sin commit
+            clave = form.cleaned_data['clave1']  # Obtiene la contraseña encriptada
+            usuario.Clave = (clave)
+
+            try:
+                usuario.save()  # Intenta guardar el usuario en la base de datos
+                print('Clave guardada exitosamente en la base de datos')
+                messages.success(request, 'Registro exitoso. Ahora puedes iniciar sesión.')
+                return redirect('custom_login')  # Redirige al detalle de la cuenta
+            except Exception as e:
+                print(f'Error al guardar la clave en la base de datos: {e}')
+                messages.error(request, 'Hubo un error al guardar la clave. Por favor, inténtalo de nuevo.')
+
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f'{field}: {error}')
+    else:
+        form = RegistroNuevoForm()
+    return render(request, 'registro_usuario.html', {'form': form})
+
+
 def custom_login(request):
     if request.method == 'POST':
         rut = request.POST.get('rut')
         clave = request.POST.get('clave')
-        
         try:
-            usuario = Usuario.objects.get(Rut=rut)
-            
-            
-
+            usuario = NuevoRegistro.objects.get(rut=rut)
+            if not usuario.Estado:
+                messages.warning(request, 'Tu cuenta está bloqueada. Contacta al soporte.')
+                return redirect('detalle_cuenta.html')  # Cambia 'pagina_principal' al nombre de tu página principal
             if usuario.Clave == clave:
                 usuario.intentos_fallidos = 0  # Reiniciar intentos fallidos
                 usuario.save()
-
-                # Registrar evento de inicio de sesión exitoso en el registro de auditoría
-                SecurityAudit.objects.create(
-                    user=usuario,
-                    event_type='Inicio de sesión exitoso',
-                    details='El usuario ha iniciado sesión correctamente.'
-                )
-
                 return redirect('detalle_cuenta', usuario_id=usuario.id)
-            
             usuario.intentos_fallidos += 1
             if usuario.intentos_fallidos == 1:
                 messages.warning(request, 'Primer intento fallido.')
@@ -61,49 +73,34 @@ def custom_login(request):
             elif usuario.intentos_fallidos >= 3:
                 usuario.Estado = False
                 usuario.save()
-
-                # Registrar evento de bloqueo de cuenta en el registro de auditoría
-                SecurityAudit.objects.create(
-                    user=usuario,
-                    event_type='Cuenta bloqueada',
-                    details='La cuenta del usuario se ha bloqueado debido a intentos fallidos de inicio de sesión.'
-                )
-
                 messages.error(request, 'Tu cuenta ha sido bloqueada. Por favor, contacta al soporte.')
                 return redirect('custom_login')
                 
             usuario.save()  # Guardar cambios en los intentos fallidos
-        except Usuario.DoesNotExist:
+        except NuevoRegistro.DoesNotExist:
             messages.error(request, 'Usuario no encontrado')
 
     return render(request, 'login.html')
 
-@   handle_errors
+@handle_errors
 def detalle_cuenta(request, usuario_id):
     try:
-        usuario = Usuario.objects.get(id=usuario_id)
-        
+        usuario = NuevoRegistro.objects.get(id=usuario_id)        
         now = datetime.now()
-
-        # Agregar la fecha y hora actual al contexto junto con el usuario
         context = {
             'usuario': usuario,
             'fecha_actual': now,
         }
-
         return render(request, 'detalle_cuenta.html', context)
-    except Usuario.DoesNotExist:
+    except NuevoRegistro.DoesNotExist:
         messages.error(request, 'Usuario no encontrado')
     
     return redirect('custom_login')
 
-
 @login_required  # Asegura que solo los administradores autenticados puedan acceder a esta vista
 def desbloquear_cuenta(request, usuario_id):
     try:
-        usuario = Usuario.objects.get(id=usuario_id)
-        
-        # Verificar si la cuenta está bloqueada
+        usuario = NuevoRegistro.objects.get(id=usuario_id)  
         if not usuario.Estado:
             if request.method == 'POST':
                 # Asegurarse de que el formulario fue enviado y confirmar desbloqueo
@@ -111,12 +108,10 @@ def desbloquear_cuenta(request, usuario_id):
                 usuario.intentos_fallidos = 0  # Reiniciar intentos fallidos
                 usuario.save()
                 messages.success(request, f'La cuenta de {usuario.Nombres} {usuario.Apellidos} ha sido desbloqueada.')
-                return redirect('custom_login') 
-               
-                return render(request, 'desbloquear_cuenta.html', {'usuario': usuario})
+                return redirect('custom_login')               
         else:
             messages.warning(request, 'La cuenta ya está desbloqueada.')
             return redirect('custom_login')  
-    except Usuario.DoesNotExist:
+    except NuevoRegistro.DoesNotExist:
         messages.error(request, 'Usuario no encontrado')
         return redirect('custom_login') 

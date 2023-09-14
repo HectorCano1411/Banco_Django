@@ -15,13 +15,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 from iniciar import views
-
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.custom_login, name='custom_login'),
-    path('detalle_cuenta/<int:usuario_id>/', views.detalle_cuenta, name='detalle_cuenta'),  
-    path('desbloquear/<int:usuario_id>/', views.desbloquear_cuenta, name='desbloquear_cuenta'),    
+    path('', views.custom_login, name='custom_login'),  # Configura la URL raíz para redirigir a custom_login
+    path('iniciar/', include('iniciar.urls'))
 ]
