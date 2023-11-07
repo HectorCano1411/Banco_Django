@@ -16,10 +16,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.conf import settings
 from iniciar import views
+from django.conf.urls.static import static
+from django.views.static import serve
+
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.custom_login, name='custom_login'),  # Configura la URL raíz para redirigir a custom_login
-    path('iniciar/', include('iniciar.urls'))
+    path('iniciar/', include('iniciar.urls')),
+    # path('descargar_comprobante/<int:usuario_id>/', views.descargar_comprobante, name='descargar_comprobante'),
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

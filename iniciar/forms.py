@@ -1,4 +1,3 @@
-
 from django import forms
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm
@@ -62,8 +61,3 @@ class RegistroNuevoForm(forms.ModelForm):
         if commit:
             usuario.save()
         return usuario
-
-
-
-
-

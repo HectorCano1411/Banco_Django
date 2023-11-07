@@ -1,0 +1,16 @@
+<!-- superuser_login.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Iniciar sesión como Superusuario</title>
+</head>
+<body>
+    <h1>Iniciar sesión como Superusuario</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ superuser_form.superuser_username.label_tag }} {{ superuser_form.superuser_username }}
+        {{ superuser_form.superuser_password.label_tag }} {{ superuser_form.superuser_password }}
+        <button type="submit">Iniciar sesión como Superusuario</button>
+    </form>
+</body>
+</html>

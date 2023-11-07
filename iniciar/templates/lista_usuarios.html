@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Usuarios</title>
+    <!-- Agrega la referencia al archivo CSS de Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5 text-center">Lista de Usuarios</h1>
+
+        <table class="table table-bordered table-hover mt-3">
+
+            <thead class="thead-dark">
+                <tr>
+                    <th>Nombre</th>
+                    <th>RUT</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                    <tr>
+                        <td>{{ usuario.Nombres }}</td>
+                        <td>{{ usuario.rut }}</td>
+                        <td>
+                            {% if usuario.Estado %}
+                                <span class="text-success">Activo</span>
+                            {% else %}
+                                <span class="text-danger">Bloqueado</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'bloquear_usuario' usuario.id %}" class="btn btn-primary">Bloquear/Desbloquear</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
