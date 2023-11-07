@@ -13,4 +13,6 @@ urlpatterns = [
     path('bloquear_usuario/<int:usuario_id>/', views.bloquear_usuario, name='bloquear_usuario'),
     path('lista_usuarios/', views.lista_usuarios, name='lista_usuarios'),
     path('bloquear_usuario/<int:usuario_id>/', views.bloquear_usuario, name='bloquear_usuario'),
+    path('admin_login/', views.admin_login, name='admin_login'),
+
 ]

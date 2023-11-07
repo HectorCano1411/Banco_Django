@@ -61,3 +61,7 @@ class RegistroNuevoForm(forms.ModelForm):
         if commit:
             usuario.save()
         return usuario
+
+class AdminAuthenticationForm(forms.Form):
+    username = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput)

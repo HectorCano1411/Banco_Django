@@ -18,6 +18,18 @@
       type="text/css"
       href="{% static 'css/stylesDetalle.css' %}"
     />
+    <style>
+      /* Estilos personalizados para el efecto hover */
+      .hover-card {
+        transition: transform 0.2s;
+      }
+      
+      .hover-card:hover {
+        transform: scale(1.05); /* Cambia el tamaño al pasar el mouse sobre la tarjeta */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Agrega una sombra suave */
+      }
+    </style>
+  
   </head>
   <body>
     <nav
@@ -48,7 +60,7 @@
       </div>
     </nav>
     <div class="container text-center mt-5">
-      <h1 class="display-4">Saldo de la cuenta</h1>
+      <h2 class="display-5">MOVIMINETOS DE LA CUENTA</h2>
       <p>Fecha actual: {{ fecha_actual|date:"m/d/Y H:i:s" }}</p>
   </div>
   
@@ -68,7 +80,9 @@
                   <td>
                       <a href="{% url 'ingresar_valor' usuario.id %}" class="btn btn-primary">Realizar Deposito</a>
                       <a href="{% url 'realizar_retiro' usuario.id %}" class="btn btn-btn-secondary bg-danger"style="color:white">Realizar Giro</a>
+                      {% if user.is_authenticated and user.is_staff %}
                       <a href="{% url 'lista_usuarios' %}" class="btn btn-primary">Ver Lista de Usuarios</a>
+                      {% endif %}
                   </td>
               </tr>
               {% if usuario %}
@@ -96,11 +110,11 @@
       </table>
   </div>
   
-    <div class="container mt-5">
+    <div class="container mt-5 ">
       <div class="row">
         <div class="col-md-6">
           <!-- Primera columna -->
-          <div class="card">
+          <div class="card hover-card">
             <div class="card-body">
               <h5 class="card-title">Saldo Disponible Cuenta Corriente</h5>
               <div class="input-group">
@@ -111,7 +125,7 @@
               </div>
             </div>
           </div>
-          <div class="card mt-3">
+          <div class="card hover-card mt-3">
             <div class="card-body">
               <h5 class="card-title">Saldo Contable</h5>
               <div class="input-group">
@@ -122,7 +136,7 @@
               </div>
             </div>
           </div>
-          <div class="card mt-3">
+          <div class="card hover-card mt-3">
             <div class="card-body">
               <h5 class="card-title">
                 Retenciones 24H <i class="fas fa-question-circle"></i>
@@ -130,7 +144,7 @@
               <p class="card-text"></p>
             </div>
           </div>
-          <div class="card mt-3">
+          <div class="card hover-card mt-3">
             <div class="card-body">
               <h5 class="card-title">
                 Retenciones 48H <i class="fas fa-question-circle"></i>
@@ -142,7 +156,7 @@
         <div class="col-md-6">
           <!-- Segunda columna -->
           <div class="card">
-            <div class="card-body">
+            <div class="card-body hover-card">
               <h5 class="card-title">
                 Saldo Disponible Línea de Crédito
                 <i class="fas fa-question-circle"></i>
@@ -155,7 +169,7 @@
               </div>
             </div>
           </div>
-          <div class="card mt-3">
+          <div class="card hover-card mt-3">
             <div class="card-body">
               <h5 class="card-title">
                 Total Cargos <i class="fas fa-dollar-sign"></i>
@@ -163,7 +177,7 @@
               <p class="card-text">{{ usuario.TotalCargos }}</p>
             </div>
           </div>
-          <div class="card mt-3">
+          <div class="card hover-card mt-3">
             <div class="card-body">
               <h5 class="card-title">
                 Total Abonos <i class="fas fa-dollar-sign"></i>

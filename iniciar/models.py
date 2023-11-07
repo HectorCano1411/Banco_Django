@@ -1,6 +1,5 @@
-
-
 from django.db import models
+from django.db.models import Max
 
 class NuevoRegistro(models.Model):
     rut = models.CharField(max_length=12, unique=True)
@@ -15,6 +14,20 @@ class NuevoRegistro(models.Model):
     TotalAbonos = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     Estado = models.BooleanField(default=True)
     intentos_fallidos = models.PositiveIntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        if not self.NumeroCuenta:
+            # Obtén el número máximo de cuenta existente
+            max_numero_cuenta = NuevoRegistro.objects.all().aggregate(Max('NumeroCuenta'))['NumeroCuenta__max']
+
+            # Si no hay cuentas existentes, comienza desde 1, de lo contrario, incrementa el número
+            if max_numero_cuenta is not None:
+                self.NumeroCuenta = str(int(max_numero_cuenta) + 1)
+            else:
+                self.NumeroCuenta = '1'
+
+        super(NuevoRegistro, self).save(*args, **kwargs)
+
 
     def __str__(self):
         return f'Usuario: {self.id} {self.Nombres} {self.rut} '

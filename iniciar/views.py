@@ -1,6 +1,5 @@
 import re
 from decimal import Decimal
-
 from django.urls import reverse
 from .models import NuevoRegistro
 from django.http import Http404
@@ -9,12 +8,14 @@ from django.contrib.auth.hashers import make_password ,check_password
 from django.shortcuts import render, redirect
 from django.contrib import messages 
 from django.db import IntegrityError
-from .forms import RegistroNuevoForm
+from .forms import AdminAuthenticationForm, RegistroNuevoForm
 from datetime import datetime
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from decimal import Decimal
 from django.db import transaction
+from django.contrib.auth import authenticate, login
+from .forms import AdminAuthenticationForm
 
 
 
@@ -64,36 +65,6 @@ def registro_usuario(request):
     return render(request, 'registro_usuario.html', {'form': form})
 
 
-# def custom_login(request):
-#     if request.method == 'POST':
-#         rut = request.POST.get('rut')
-#         clave = request.POST.get('clave')
-#         try:
-#             usuario = NuevoRegistro.objects.get(rut=rut)
-#             if not usuario.Estado:
-#                 messages.warning(request, 'Tu cuenta está bloqueada. Contacta al soporte.')
-#                 return render(request, 'login.html')
-#             if check_password(clave, usuario.Clave):
-#                 usuario.intentos_fallidos = 0  # Reiniciar intentos fallidos
-#                 usuario.save()
-#                 return redirect('detalle_cuenta', usuario_id=usuario.id)
-#             usuario.intentos_fallidos += 1
-#             if usuario.intentos_fallidos == 1:
-#                 messages.warning(request, 'Primer intento fallido.')
-#             elif usuario.intentos_fallidos == 2:
-#                 messages.warning(request, 'Segundo intento fallido. Le queda un intento.')
-#             elif usuario.intentos_fallidos >= 3:
-#                 usuario.Estado = False
-#                 usuario.save()
-#                 messages.error(request, 'Tu cuenta ha sido bloqueada. Por favor, contacta al soporte.')
-                
-#             usuario.save()  # Guardar cambios en los intentos fallidos
-#         except NuevoRegistro.DoesNotExist:
-#             messages.error(request, 'Usuario no encontrado')
-
-#     return render(request, 'login.html')
-
-
 def custom_login(request):
     if request.method == 'POST':
         rut = request.POST.get('rut')
@@ -126,103 +97,6 @@ def custom_login(request):
             messages.error(request, 'Usuario no encontrado')
 
     return render(request, 'login.html')
-
-# @transaction.atomic
-# @login_required
-# def ingresar_valor(request, usuario_id):
-#     try:
-#         usuario = NuevoRegistro.objects.get(id=usuario_id)
-
-#         if request.method == 'POST':
-#             nombre = request.POST.get('nombre')
-#             rut = request.POST.get('rut')
-#             monto_str = request.POST.get('monto', '0')
-
-#             if not monto_str.isdigit():
-#                 messages.error(request, 'Solo se pueden ingresar valores enteros.')
-#             else:
-#                 monto = Decimal(monto_str)  # Convertir el valor a Decimal
-
-#                 if monto <= Decimal('0'):
-#                     messages.error(request, 'El monto debe ser mayor que cero.')
-#                 else:
-#                     if usuario.SaldoCuentaCorriente is None:
-#                         usuario.SaldoCuentaCorriente = Decimal('0.0')
-
-#                     # Realizar la operación de ingreso de valor y actualizar el saldo
-#                     usuario.SaldoCuentaCorriente += monto
-#                     usuario.save()
-#                     messages.success(request, f'Se ingresó ${monto} a la cuenta de {nombre} (RUT: {rut}) exitosamente.')
-
-#                     # Aquí convierte el objeto Decimal a un número de punto flotante
-#                     monto_float = float(monto)
-
-#                     # Guarda los datos necesarios en la sesión para la vista de comprobante
-#                     request.session['nombre'] = nombre
-#                     request.session['rut'] = rut
-#                     request.session['monto'] = monto_float
-
-#                     # Redirecciona a la vista 'comprobante'
-#                     return redirect('comprobante', usuario_id=usuario_id)
-
-#     except NuevoRegistro.DoesNotExist:
-#         return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
-
-#     return render(request, 'ingresar_valor.html', {'usuario': usuario})
-# @transaction.atomic
-# @login_required
-# def ingresar_valor(request, usuario_id):
-#     try:
-#         usuario = NuevoRegistro.objects.get(id=usuario_id)
-
-#         if request.method == 'POST':
-#             nombre = request.POST.get('nombre')
-#             rut_ingresado = request.POST.get('rut')
-#             monto_str = request.POST.get('monto', '0')
-
-#             # Obtener el RUT del usuario autenticado desde la sesión
-#             rut_autenticado = request.session.get('rut')
-
-#             # Verificar que el RUT almacenado en la sesión coincida con el RUT ingresado
-#             if rut_autenticado != rut_ingresado:
-#                 messages.error(request, 'El RUT ingresado no coincide con tu RUT.')
-#                 return render(request, 'ingresar_valor.html', {'usuario': usuario})
-
-#             # Validar que el monto sea un valor entero
-#             if not monto_str.isdigit():
-#                 messages.error(request, 'Solo se pueden ingresar valores enteros mayores a 0.')
-#                 return render(request, 'ingresar_valor.html', {'usuario': usuario})
-
-#             monto = Decimal(monto_str)  # Convertir el valor a Decimal
-
-#             if monto <= Decimal('0'):
-#                 messages.error(request, 'El monto debe ser mayor que cero.')
-#             else:
-#                 if usuario.SaldoCuentaCorriente is None:
-#                     usuario.SaldoCuentaCorriente = Decimal('0.0')
-
-#                 # Realizar la operación de ingreso de valor y actualizar el saldo
-#                 usuario.SaldoCuentaCorriente += monto
-#                 usuario.SaldoContable = usuario.SaldoCuentaCorriente - usuario.TotalCargos + usuario.TotalAbonos
-#                 usuario.SaldoLineaCredito = usuario.SaldoCuentaCorriente
-#                 usuario.save()
-#                 messages.success(request, f'Se ingresó ${monto} a la cuenta de {nombre} (RUT: {rut_ingresado}) exitosamente.')
-
-#                 # Aquí convierte el objeto Decimal a un número de punto flotante
-#                 monto_float = float(monto)
-
-#                 # Guarda los datos necesarios en la sesión para la vista de comprobante
-#                 request.session['nombre'] = nombre
-#                 request.session['rut'] = rut_ingresado
-#                 request.session['monto'] = monto_float
-
-#                 # Redirecciona a la vista 'comprobante'
-#                 return redirect('comprobante', usuario_id=usuario_id)
-
-#     except NuevoRegistro.DoesNotExist:
-#         return JsonResponse({'error': 'Usuario no encontrado'}, status=404)
-
-#     return render(request, 'ingresar_valor.html', {'usuario': usuariofrom decimal import Decimal
 
 
 def ingresar_valor(request, usuario_id):
@@ -303,55 +177,6 @@ def ingresar_valor(request, usuario_id):
 
     return render(request, 'ingresar_valor.html', {'usuario': usuario})
 
-
-
-
-
-# @transaction.atomic
-# @login_required
-# def realizar_retiro(request, usuario_id):
-#     try:
-#         usuario = NuevoRegistro.objects.get(id=usuario_id)
-#     except NuevoRegistro.DoesNotExist:
-#         messages.error(request, 'Usuario no encontrado')
-#         return redirect('detalle_cuenta', usuario_id=usuario_id)
-
-#     if request.method == 'POST':
-#         monto = request.POST.get('monto', '0.0')  # Obtener el monto como cadena
-
-#         if not monto.isdigit():
-#             messages.error(request, 'Solo se pueden retirar valores enteros y el monto debe ser mayor a 0.')
-#             return redirect('realizar_retiro', usuario_id=usuario_id)
-
-#         monto_decimal = Decimal(monto)  # Convertir la cadena a Decimal
-
-#         if monto_decimal <= Decimal('0.0'):
-#             messages.error(request, 'El monto a retirar debe ser mayor que cero.')
-#         elif monto_decimal > usuario.SaldoCuentaCorriente:
-#             messages.error(request, 'No tienes suficientes fondos para realizar este retiro.')
-#         else:
-#             # Realizar la operación de retiro de valor y actualizar el saldo
-#             usuario.SaldoCuentaCorriente -= monto_decimal
-#             usuario.save()
-#             messages.success(request, f'Se retiró ${monto_decimal} de la cuenta exitosamente.')
-
-#             # Datos a enviar a la vista de comprobante
-#             nombre = usuario.Nombres
-#             rut = usuario.rut
-
-#             # Guarda los datos necesarios en la sesión para la vista de comprobante
-#             request.session['nombre'] = nombre
-#             request.session['rut'] = rut
-#             request.session['monto'] = float(monto_decimal)  # Convierte el Decimal a float
-
-#             return redirect('comprobante_retiro', usuario_id=usuario_id)
-
-#     return render(request, 'realizar_retiro.html', {'usuario': usuario})
-from decimal import Decimal
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.db import transaction
-from .models import NuevoRegistro
 
 @transaction.atomic
 @login_required
@@ -453,9 +278,11 @@ def comprobante_retiro(request, usuario_id):
 def detalle_cuenta(request, usuario_id):
     try:
         usuario = NuevoRegistro.objects.get(id=usuario_id)        
+        numero_cuenta = usuario.NumeroCuenta  # Obtener el valor de NumeroCuenta
         now = datetime.now()
         context = {
             'usuario': usuario,
+            'numero_cuenta': numero_cuenta,  # Agregar numero_cuenta al contexto
             'fecha_actual': now,
         }
         return render(request, 'detalle_cuenta.html', context)
@@ -464,8 +291,12 @@ def detalle_cuenta(request, usuario_id):
     
     return redirect('custom_login')
 
-
+@login_required
 def lista_usuarios(request):
+    if not request.user.is_authenticated or not request.user.is_staff:
+        # El usuario no está autenticado o no es un administrador, redirige a la página de autenticación de administrador
+        return redirect('admin_login')
+
     usuarios = NuevoRegistro.objects.all()
     return render(request, 'lista_usuarios.html', {'usuarios': usuarios})
 
@@ -475,47 +306,18 @@ def bloquear_usuario(request, usuario_id):
     usuario.save()
     return redirect('lista_usuarios')
 
-# from django.http import FileResponse
-# from django.shortcuts import get_object_or_404
-# from django.http import Http404
-# from .models import NuevoRegistro
 
-# def descargar_comprobante(request, usuario_id):
-#     try:
-#         # Obtén el objeto NuevoRegistro correspondiente al usuario
-#         usuario = get_object_or_404(NuevoRegistro, id=usuario_id)
-
-#         # Aquí es donde debes generar o recuperar el comprobante. Supongamos que generas un PDF con ReportLab.
-#         from reportlab.lib.pagesizes import letter
-#         from reportlab.lib import colors
-#         from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
-#         from reportlab.platypus.tables import Table
-#         from reportlab.platypus.styles import getSampleStyleSheet
-#         from io import BytesIO
-
-#         buffer = BytesIO()
-#         pdf = SimpleDocTemplate(buffer, pagesize=letter)
-#         pdf_title = "Comprobante de Ingreso"
-#         styles = getSampleStyleSheet()
-#         story = []
-
-#         # Agregar el contenido del comprobante, personaliza esto según tus necesidades.
-#         story.append(Paragraph(f'<strong>Nombre:</strong> {usuario.Nombres}', styles["Normal"]))
-#         story.append(Spacer(1, 12))
-#         story.append(Paragraph(f'<strong>RUT:</strong> {usuario.rut}', styles["Normal"]))
-#         story.append(Spacer(1, 12))
-#         story.append(Paragraph(f'<strong>Monto:</strong> {usuario.SaldoCuentaCorriente}', styles["Normal"]))
-
-#         # Agrega más contenido si es necesario, como el número de cuenta, fecha, etc.
-
-#         # Construir el PDF
-#         pdf.build(story)
-#         buffer.seek(0)
-
-#         # Preparar una respuesta para descargar el PDF
-#         response = FileResponse(buffer, content_type='application/pdf')
-#         response['Content-Disposition'] = f'attachment; filename="comprobante.pdf"'
-#         return response
-
-#     except NuevoRegistro.DoesNotExist:
-#         raise Http404("Usuario no encontrado")
+def admin_login(request):
+    if request.method == 'POST':
+        form = AdminAuthenticationForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                # El administrador ha ingresado con éxito, puedes redirigirlo a la lista de usuarios para bloquear
+                login(request, user)
+                return redirect('lista_usuarios')  # Reemplaza 'lista_usuarios' con la URL de tu lista de usuarios
+    else:
+        form = AdminAuthenticationForm()
+    return render(request, 'admin_login.html', {'form': form})
