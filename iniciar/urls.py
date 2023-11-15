@@ -4,6 +4,7 @@ from iniciar import views
 
 
 urlpatterns = [
+    path('admin/', admin.site.urls),
     path('registro/', views.registro_usuario, name='registro_usuario'),
     path('detalle_cuenta/<int:usuario_id>/', views.detalle_cuenta, name='detalle_cuenta'),  
     path('ingresar_valor/<int:usuario_id>/', views.ingresar_valor, name='ingresar_valor'),

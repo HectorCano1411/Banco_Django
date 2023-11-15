@@ -10,12 +10,12 @@ from django.contrib import messages
 from django.db import IntegrityError
 from .forms import AdminAuthenticationForm, RegistroNuevoForm
 from datetime import datetime
-from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from decimal import Decimal
 from django.db import transaction
 from django.contrib.auth import authenticate, login
 from .forms import AdminAuthenticationForm
+from .models import NuevoRegistro
 
 
 
@@ -147,13 +147,7 @@ def ingresar_valor(request, usuario_id):
                     usuario.SaldoContable = usuario.SaldoCuentaCorriente
                     usuario.SaldoLineaCredito = usuario.SaldoCuentaCorriente * Decimal('0.8')  # Ejemplo de cálculo
                     usuario.save()
-
-                # Actualizar TotalCargos y TotalAbonos
-                # if usuario.TotalCargos is not None:
-                #     usuario.TotalCargos += monto
-                # else:
-                #     usuario.TotalCargos = monto
-
+                    
                 if usuario.TotalAbonos is not None:
                     usuario.TotalAbonos += monto
                 else:
@@ -178,8 +172,7 @@ def ingresar_valor(request, usuario_id):
     return render(request, 'ingresar_valor.html', {'usuario': usuario})
 
 
-@transaction.atomic
-@login_required
+
 def realizar_retiro(request, usuario_id):
     try:
         usuario = NuevoRegistro.objects.get(id=usuario_id)
@@ -231,11 +224,11 @@ def realizar_retiro(request, usuario_id):
 def comprobante(request, usuario_id):
     try:
         usuario = NuevoRegistro.objects.get(id=usuario_id)
-
         # Obtiene los datos de la transacción del último mensaje en la sesión
         nombre = request.session.get('nombre')
         rut = request.session.get('rut')
         monto = request.session.get('monto')
+        fecha_y_hora = request.session.get('fecha_y_hora')
 
         # Ajusta los campos según tu modelo
         # Por ejemplo, puedes agregar otros campos como 'NumeroCuenta', 'SaldoCuentaCorriente', etc.
@@ -250,6 +243,7 @@ def comprobante(request, usuario_id):
             'nombre': nombre,
             'rut': rut,
             'monto': monto,
+            'fecha_y_hora': fecha_y_hora, 
         })
 
     except NuevoRegistro.DoesNotExist:

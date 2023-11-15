@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Max
 
+
 class NuevoRegistro(models.Model):
     rut = models.CharField(max_length=12, unique=True)
     Nombres = models.CharField(max_length=100)
@@ -60,3 +61,6 @@ class SecurityAudit(models.Model):
                 details = f'Estado cambiado de {original_obj.user.Estado} a {self.user.Estado}'
                 self.create_security_audit(event_type, details)
         super().save(*args, **kwargs)
+        
+
+
