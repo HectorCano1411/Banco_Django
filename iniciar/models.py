@@ -61,5 +61,3 @@ class SecurityAudit(models.Model):
                 details = f'Estado cambiado de {original_obj.user.Estado} a {self.user.Estado}'
                 self.create_security_audit(event_type, details)
         super().save(*args, **kwargs)
-
-
