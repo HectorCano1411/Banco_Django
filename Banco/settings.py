@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'iniciar',
     'bootstrap5',
+    'transferencias',
+
 
 
     
@@ -55,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'Banco.urls'
@@ -127,9 +130,18 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_URL = '/static/'
 
 
-STATICFILES_DIRS = (os.path.join(BASE_DIR, './iniciar/static/'), )
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'iniciar/static/'), )
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_AGE = 120    
+
+# SESSION_SAVE_EVERY_REQUEST = True
+# SESSION_COOKIE_SECURE = True  # Solo se envía la cookie a través de conexiones seguras (HTTPS)
+
+# Configuración de la seguridad de las cookies de sesión
+# SESSION_COOKIE_HTTPONLY = True  # La cookie no es accesible a través de JavaScript
+# SESSION_COOKIE_SAMESITE = 'Strict'  # Restringe el envío de la cookie solo a solicitudes del mismo sitio

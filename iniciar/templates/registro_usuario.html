@@ -1,4 +1,132 @@
-{% load static %}
+
+{% extends 'base.html' %}
+{% load static %} 
+{% block title %}Login - Banco en Línea{% endblock %}
+
+{% block content %}
+<section style="background-image: url('{% static 'img/bg-login.jpg' %}');background-size: cover; background-repeat: no-repeat;">
+  <div class="container d-flex justify-content-center align-items-center vh-100">
+      <div class="overlay">
+      <div class="login-box">
+          <div class="text-center">
+              <h4>
+                  Bienvenido a nuestro Portal <br />
+                  Personas
+                  <span class="regular">Banco en Línea</span>
+              </h4>
+              <br />
+
+              {% if messages %}
+              <ul>
+                  {% for message in messages %}
+                  <li style="color: red">{{ message }}</li>
+                  {% endfor %}
+              </ul>
+              {% endif %}
+            
+              <button
+                  type="button"
+                  class="btn btn-primary"
+                  data-bs-toggle="modal"
+                  data-bs-target="#registroModal"
+              >
+                  Abrir Registro
+              </button>
+              <!-- Modal -->
+              <div
+                  class="modal fade"
+                  id="registroModal"
+                  tabindex="-1"
+                  aria-labelledby="registroModalLabel"
+                  aria-hidden="true"
+              >
+                  <div class="modal-dialog">
+                      <div class="modal-content">
+                          <div class="modal-header">
+                              <h5 class="modal-title" id="registroModalLabel">
+                                  Registro de Usuario
+                              </h5>
+                              <button
+                                  type="button"
+                                  class="btn-close"
+                                  data-bs-dismiss="modal"
+                                  aria-label="Close"
+                              ></button>
+                          </div>
+                          <div class="modal-body">
+                              <form method="POST">
+                                  {% csrf_token %}
+                                  <div class="mb-3">
+                                      {{ form.rut.label_tag }} {{ form.rut }}
+                                  </div>
+                                  <div class="mb-3">
+                                      {{ form.clave1.label_tag }} {{ form.clave1 }}
+                                  </div>
+                                  <div class="mb-3">
+                                      {{ form.clave2.label_tag }} {{ form.clave2 }}
+                                  </div>
+                                  <div class="mb-3">
+                                      {{ form.Nombres.label_tag }} {{ form.Nombres }}
+                                  </div>
+                                  <div class="mb-3">
+                                      {{ form.Apellidos.label_tag }} {{ form.Apellidos }}
+                                  </div>
+                                  <div class="mb-3">
+                                      {{ form.NumeroCuenta.label_tag }} {{ form.NumeroCuenta }}
+                                      
+                                  </div>
+                                  <div class="mb-3">
+                                    {{ form.TipoCuenta.label_tag }} {{ form.TipoCuenta }}
+                                </div>
+                                  <div class="mb-3">
+                                      {{ form.SaldoContable.label_tag }} {{ form.SaldoContable }}
+                                      
+                                  </div>
+                                  <div class="mb-3">
+                                      {{ form.SaldoCuentaCorriente.label_tag }} 
+                                      {{ form.SaldoCuentaCorriente }}
+                                  </div>
+                                  <div class="mb-3">
+                                      {{ form.SaldoLineaCredito.label_tag }} 
+                                      {{form.SaldoLineaCredito }}
+                                  </div>
+                                  <div class="mb-3">
+                                      {{ form.TotalCargos.label_tag }} {{ form.TotalCargos }}
+                                  </div>
+                                  <div class="mb-3">
+                                      {{ form.TotalAbonos.label_tag }} {{ form.TotalAbonos }}
+                                  </div>
+                                  <div class="mb-3">
+                                      {{ form.Estado.label_tag }} {{ form.Estado }}
+                                  </div>
+                                  <br />
+                                  <br />
+                                  <br />
+                                  <br />
+                                  <!-- ... Tu contenido del formulario ... -->
+                                  <button type="submit" class="btn btn-primary">
+                                      Registrar
+                                  </button>
+                              </form>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <br />
+              <br />
+
+              <p>
+                  ¿Ya tienes una cuenta?
+                  <a href="{% url 'custom_login' %}">Inicio de Sesion</a>
+              </p>
+          </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+{% comment %} {% load static %}
 <!DOCTYPE html>
 <html>
   <head>
@@ -126,6 +254,9 @@
                                           {{ form.NumeroCuenta.label_tag }} {{ form.NumeroCuenta }}
                                           
                                       </div>
+                                      <div class="mb-3">
+                                        {{ form.TipoCuenta.label_tag }} {{ form.TipoCuenta }}
+                                    </div>
                                       <div class="mb-3">
                                           {{ form.SaldoContable.label_tag }} {{ form.SaldoContable }}
                                           
@@ -283,4 +414,4 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
     
   </body>
-</html>
+</html> {% endcomment %}

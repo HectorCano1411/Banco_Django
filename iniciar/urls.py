@@ -4,7 +4,6 @@ from iniciar import views
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('registro/', views.registro_usuario, name='registro_usuario'),
     path('detalle_cuenta/<int:usuario_id>/', views.detalle_cuenta, name='detalle_cuenta'),  
     path('ingresar_valor/<int:usuario_id>/', views.ingresar_valor, name='ingresar_valor'),
@@ -15,5 +14,6 @@ urlpatterns = [
     path('lista_usuarios/', views.lista_usuarios, name='lista_usuarios'),
     path('bloquear_usuario/<int:usuario_id>/', views.bloquear_usuario, name='bloquear_usuario'),
     path('admin_login/', views.admin_login, name='admin_login'),
+    path('custom_logout/', views.custom_logout, name='custom_logout'),  
 
 ]

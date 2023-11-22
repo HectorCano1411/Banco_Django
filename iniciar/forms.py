@@ -13,11 +13,13 @@ class RegistroNuevoForm(forms.ModelForm):
     clave2 = forms.CharField(label='Confirmar',widget=forms.PasswordInput(attrs={'placeholder': 'Contraseña'}))    
     Nombres = forms.CharField(max_length=100, label='Nombres')
     Apellidos = forms.CharField(max_length=100, label='Apellidos')
+    TipoCuenta = forms.ChoiceField(choices=NuevoRegistro.TIPOS_DE_CUENTA, label='Tipo de Cuenta')
+
    
     
     class Meta:
         model = NuevoRegistro
-        fields = ['rut', 'clave1', 'clave2', 'Nombres', 'Apellidos']
+        fields = ['rut', 'clave1', 'clave2', 'Nombres', 'Apellidos','TipoCuenta']
         
     def clean_clave1(self):
         clave = self.cleaned_data['clave1']

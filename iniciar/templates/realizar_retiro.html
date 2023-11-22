@@ -1,4 +1,52 @@
-{% load static %}
+
+{% extends 'base.html' %}
+{% load static %} 
+{% block title %}Realizar Giro{% endblock %}
+
+{% block content %}
+
+<section style="background-image: url('{% static 'img/bg-login.jpg' %}'); background-size: cover; background-repeat: no-repeat;">
+    <div class="container d-flex justify-content-center align-items-center vh-100 "> 
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="text-center" > 
+                        <h4 class="card-title">Realizar Retiro de la Cuenta</h4>
+                        {% if messages %}
+                        <ul class="list-unstyled">
+                            {% for message in messages %}
+                            <li class="alert alert-{{ message.tags }} alert-danger text-center mb-2">{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="monto">Monto a Retirar:</label>
+                                <input type="text" class="form-control" id="monto" name="monto" placeholder="Ingrese el monto a retirar" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Realizar Retiro</button>
+                        </form>
+                        <a href="{% url 'detalle_cuenta' usuario.id %}" class="btn btn-primary mt-3">Volver a Detalle de Cuenta</a>
+                        </div>
+                        <div class="navbar-nav ml-auto">
+                            <a class="nav-item nav-link" href="{% url 'custom_login' %}"
+                              >Cerrar Sesión</a
+                            >
+                          </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    </section>
+
+{% endblock %}
+{% comment %} {% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -159,4 +207,4 @@
 </script>
 
 </body>
-</html>
+</html> {% endcomment %}
