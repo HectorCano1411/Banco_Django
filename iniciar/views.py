@@ -16,42 +16,26 @@ from django.db import transaction
 from django.contrib.auth import authenticate, login
 from .forms import AdminAuthenticationForm
 from .models import NuevoRegistro
-
-
-
-
-def handle_errors(view_func):
-    def wrapped_view(request, *args, **kwargs):
-        try:
-            return view_func(request, *args, **kwargs)
-        except IntegrityError as e:
-            # Manejo de errores de integridad de la base de datos
-            error_message = str(e)
-            return render(request, 'error.html', {'error_message': error_message})
-        except NuevoRegistro.DoesNotExist:
-            # Manejo de errores para usuario no encontrado
-            error_message = 'Usuario no encontrado'
-            return render(request, 'error.html', {'error_message': error_message})
-        except Exception as e:
-            # Manejo de otros errores no capturados, como errores personalizados
-            error_message = str(e)
-            return render(request, 'error.html', {'error_message': error_message})
-
-    return wrapped_view
+from datetime import timedelta
+from django.utils import timezone
 
 def registro_usuario(request):
     if request.method == 'POST':
         form = RegistroNuevoForm(request.POST)
         if form.is_valid():
-            usuario = form.save(commit=False)  # Guarda el usuario sin commit
-            clave = form.cleaned_data['clave1']  # Obtiene la contraseña encriptada
+            usuario = form.save(commit=False)
+            clave = form.cleaned_data['clave1']
             usuario.Clave = make_password(clave)
 
+            # Añade la validación para establecer el TipoCuenta por defecto a CUENTA_CORRIENTE
+            if not usuario.TipoCuenta:
+                usuario.TipoCuenta = NuevoRegistro.CUENTA_CORRIENTE
+
             try:
-                usuario.save()  # Intenta guardar el usuario en la base de datos
+                usuario.save()
                 print('Clave guardada exitosamente en la base de datos')
                 messages.success(request, 'Registro exitoso. Ahora puedes iniciar sesión.')
-                return redirect('custom_login')  # Redirige al detalle de la cuenta
+                return redirect('custom_login')
             except Exception as e:
                 print(f'Error al guardar la clave en la base de datos: {e}')
                 messages.error(request, 'Hubo un error al guardar la clave. Por favor, inténtalo de nuevo.')
@@ -80,6 +64,8 @@ def custom_login(request):
 
                 # Almacena el RUT del usuario autenticado en la sesión
                 request.session['rut'] = rut
+                request.session.set_expiry(timezone.now() + timedelta(seconds=120))
+
 
                 return redirect('detalle_cuenta', usuario_id=usuario.id)
             usuario.intentos_fallidos += 1
@@ -99,6 +85,22 @@ def custom_login(request):
     return render(request, 'login.html')
 
 
+
+
+def custom_logout(request):
+    # Verifica si se debe mostrar la alerta
+    show_warning = request.GET.get('show_warning', False)
+
+    # Realiza acciones de cierre de sesión si es necesario
+    request.session.flush()
+
+    # Renderiza la plantilla con la alerta si es necesario
+    if show_warning:
+        return render(request, 'logout_with_warning.html', {'show_warning': True})
+    else:
+        return redirect('custom_login')
+   
+
 def ingresar_valor(request, usuario_id):
     try:
         usuario = NuevoRegistro.objects.get(id=usuario_id)
@@ -107,15 +109,9 @@ def ingresar_valor(request, usuario_id):
             nombre = request.POST.get('nombre')
             rut_ingresado = request.POST.get('rut')
             monto_str = request.POST.get('monto', '0')
-            # Verificar que el nombre solo contenga letras
-            if not re.match("^[A-Za-z\s]*$", nombre):
-                messages.error(request, 'El nombre solo debe contener letras y espacios.')
-                return render(request, 'ingresar_valor.html', {'usuario': usuario})
-
-            # Obtener el RUT del usuario autenticado desde la sesión
-            rut_autenticado = request.session.get('rut')
 
             # Verificar que el RUT almacenado en la sesión coincida con el RUT ingresado
+            rut_autenticado = request.session.get('rut')
             if rut_autenticado != rut_ingresado:
                 messages.error(request, 'El RUT ingresado no coincide con tu RUT del Titular.')
                 return render(request, 'ingresar_valor.html', {'usuario': usuario})
@@ -125,11 +121,17 @@ def ingresar_valor(request, usuario_id):
                 messages.error(request, 'Solo se pueden ingresar valores enteros mayores a 0.')
                 return render(request, 'ingresar_valor.html', {'usuario': usuario})
 
-            monto = Decimal(monto_str)  # Convertir el valor a Decimal
+            monto = Decimal(monto_str)
 
             if monto <= Decimal('0'):
                 messages.error(request, 'El monto debe ser mayor que cero.')
             else:
+                # Validar que el TipoCuenta sea 'Cuenta Corriente'
+                if usuario.TipoCuenta != NuevoRegistro.CUENTA_CORRIENTE:
+                    messages.error(request, 'Solo se pueden ingresar valores a cuentas corrientes.')
+                    return render(request, 'ingresar_valor.html', {'usuario': usuario})
+
+                # Resto del código para ingresar el valor
                 if usuario.SaldoCuentaCorriente is None:
                     usuario.SaldoCuentaCorriente = Decimal('0.0')
 
@@ -170,7 +172,6 @@ def ingresar_valor(request, usuario_id):
         messages.error(request, 'El usuario no existe.')
 
     return render(request, 'ingresar_valor.html', {'usuario': usuario})
-
 
 
 def realizar_retiro(request, usuario_id):
@@ -268,7 +269,7 @@ def comprobante_retiro(request, usuario_id):
     })
 
 
-@handle_errors
+
 def detalle_cuenta(request, usuario_id):
     try:
         usuario = NuevoRegistro.objects.get(id=usuario_id)        
@@ -284,6 +285,43 @@ def detalle_cuenta(request, usuario_id):
         messages.error(request, 'Usuario no encontrado')
     
     return redirect('custom_login')
+
+# from django.shortcuts import render, redirect
+# from django.contrib.sessions.models import Session
+# from django.utils import timezone
+# from datetime import timedelta
+
+# def detalle_cuenta(request, usuario_id):
+#     try:
+#         usuario = NuevoRegistro.objects.get(id=usuario_id)
+#         numero_cuenta = usuario.NumeroCuenta  # Obtener el valor de NumeroCuenta
+
+#         # Verifica si la sesión necesita ser renovada o si aún no existe
+#         session_key = request.session.session_key
+#         if not session_key:
+#             request.session.save()  # Guarda la sesión para que obtenga una clave
+#             session_key = request.session.session_key
+
+#         # Obtiene o crea la sesión actual del usuario
+#         session, created = Session.objects.get_or_create(session_key=session_key)
+
+#         # Renueva la sesión por 30 segundos más desde ahora
+#         session.expire_date = timezone.now() + timedelta(seconds=30)
+#         session.save()
+
+#         now = datetime.now()
+#         context = {
+#             'usuario': usuario,
+#             'numero_cuenta': numero_cuenta,  # Agregar numero_cuenta al contexto
+#             'fecha_actual': now,
+#         }
+#         return render(request, 'detalle_cuenta.html', context)
+#     except NuevoRegistro.DoesNotExist:
+#         messages.error(request, 'Usuario no encontrado')
+    
+#     return redirect('custom_login')
+
+
 
 @login_required
 def lista_usuarios(request):
@@ -315,3 +353,4 @@ def admin_login(request):
     else:
         form = AdminAuthenticationForm()
     return render(request, 'admin_login.html', {'form': form})
+

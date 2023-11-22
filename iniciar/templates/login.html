@@ -1,4 +1,54 @@
-{% load static %}
+
+{% extends 'base.html' %}
+{% load static %} 
+{% block title %}Login - Banco en Línea{% endblock %}
+
+{% block content %}
+<section style="background-image: url('{% static 'img/bg-login.jpg' %}'); background-size: cover; background-repeat: no-repeat;">
+    <div class="container d-flex justify-content-center align-items-center vh-100 "> 
+        <div class="overlay">
+            <div class="login-box">
+                <div class="text-center">
+                    <h3>Bienvenido a nuestro Portal <br/>
+                        Personas
+                        <span class="regular">Banco en Línea</span></h3>
+                    {% if messages %}
+                    <ul>
+                        {% for message in messages %}
+                            <li style="color:red;">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    <form method="post" class="login-form">
+                        {% csrf_token %}
+                        <div class="mb-3 input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-person-fill"></i>
+                            </span>
+                            <input type="text" name="rut" required class="form-control" placeholder="Rut Usuario" style="font-style: italic";>
+                        </div>
+                        <div class="mb-3 input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-lock"></i>
+                            </span>
+                            <input type="password" name="clave" required class="form-control" placeholder="Clave" style="font-style: italic";>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Ingresar</button>
+                        <p id="clave">
+                            <a href="https://login.portal.bancochile.cl/bancochile-web/persona/login/index.html#/olvido-clave-persona">> Olvido Clave</a>
+                        </p>
+                    </form>
+                    
+                    <p>¿No tienes una cuenta? <a href="{% url 'registro_usuario' %}">Regístrate aquí</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% comment %} {% load static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -159,4 +209,5 @@
         
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
+</html> {% endcomment %}
+<!-- login.html -->

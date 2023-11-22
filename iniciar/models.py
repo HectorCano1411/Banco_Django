@@ -1,20 +1,32 @@
 from django.db import models
+from django.db import models
 from django.db.models import Max
 
 
+
 class NuevoRegistro(models.Model):
+    CUENTA_CORRIENTE = 'corriente'
+    CUENTA_AHORRO = 'ahorro'
+
+    TIPOS_DE_CUENTA = [
+        (CUENTA_CORRIENTE, 'Cuenta Corriente'),
+        (CUENTA_AHORRO, 'Cuenta de Ahorro'),
+    ]
+
     rut = models.CharField(max_length=12, unique=True)
     Nombres = models.CharField(max_length=100)
     Apellidos = models.CharField(max_length=100)
     Clave = models.CharField(max_length=128)
     NumeroCuenta = models.CharField(max_length=20, null=True, blank=True)
     SaldoContable = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    TipoCuenta = models.CharField(max_length=10, choices=TIPOS_DE_CUENTA, default=CUENTA_CORRIENTE)
     SaldoCuentaCorriente = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     SaldoLineaCredito = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     TotalCargos = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     TotalAbonos = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     Estado = models.BooleanField(default=True)
     intentos_fallidos = models.PositiveIntegerField(default=0)
+
 
     def save(self, *args, **kwargs):
         if not self.NumeroCuenta:
