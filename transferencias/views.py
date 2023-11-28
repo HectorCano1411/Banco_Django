@@ -13,7 +13,8 @@ def crear_transferencia(request):
         form = TransferenciaForm(request.POST)
         if form.is_valid():
             transferencia = form.save(commit=False)
-
+            
+            
             # Actualizar saldos de cuentas
             cuenta_origen = transferencia.cuenta_origen
             cuenta_destino = transferencia.cuenta_destino
@@ -36,7 +37,7 @@ def crear_transferencia(request):
                 cuenta_destino.save()
 
                 # Puedes redirigir a una página de éxito o a cualquier otra vista después de guardar la transferencia
-                return redirect('detalles_transferencia', transferencia.id)
+                return redirect('aprobar_transferencia', transferencia.id)
             else:
                 # Manejar el caso en que no hay saldo suficiente en la cuenta de origen
                 form.add_error(None, 'Saldo insuficiente en la cuenta de origen.')
@@ -48,6 +49,27 @@ def crear_transferencia(request):
     return render(request, 'transferencia_form.html', {'form': form})
 # Otras vistas se mantienen similares, pero con ajustes para trabajar con el nuevo modelo de Cuenta y Transferencia.
 
+
+def aprobar_transferencia(request, transferencia_id):
+    transferencia = get_object_or_404(Transferencia, pk=transferencia_id)
+     
+
+    # Lógica para aprobar la transferencia
+    if not transferencia.aprobada:
+        # Actualizar saldos de cuentas
+        cuenta_origen = transferencia.cuenta_origen
+        cuenta_destino = transferencia.cuenta_destino
+
+        cuenta_origen.SaldoContable = F('SaldoContable') - transferencia.monto
+        cuenta_destino.SaldoContable = F('SaldoContable') + transferencia.monto
+
+        transferencia.aprobada = True
+
+        cuenta_origen.save()
+        cuenta_destino.save()
+        transferencia.save()
+
+    return render(request, 'aprobar_transferencia.html', {'transferencia': transferencia})
 
 # En detalles_transferencia, puedes obtener las cuentas asociadas a la transferencia:
 
@@ -71,63 +93,45 @@ def detalles_transferencia(request, transferencia_id):
 # Las demás vistas se pueden ajustar de manera similar, considerando el nuevo modelo Cuenta y la relación con NuevoRegistro.
 
 
-# Por ejemplo, en listar_transferencias, se puede hacer:
-def listar_transferencias(request):
-    transferencias = Transferencia.objects.all()
-    return render(request, 'listar_transferencias.html', {'transferencias': transferencias})
-# Las demás vistas se pueden ajustar de manera similar, considerando el nuevo modelo Cuenta y la relación con NuevoRegistro.
+# # Por ejemplo, en listar_transferencias, se puede hacer:
+# def listar_transferencias(request):
+#     transferencias = Transferencia.objects.all()
+#     return render(request, 'listar_transferencias.html', {'transferencias': transferencias})
+# # Las demás vistas se pueden ajustar de manera similar, considerando el nuevo modelo Cuenta y la relación con NuevoRegistro.
 
-def aprobar_transferencia(request, transferencia_id):
-    transferencia = get_object_or_404(Transferencia, pk=transferencia_id)
 
-    # Lógica para aprobar la transferencia
-    if not transferencia.aprobada:
-        # Actualizar saldos de cuentas
-        cuenta_origen = transferencia.cuenta_origen
-        cuenta_destino = transferencia.cuenta_destino
 
-        cuenta_origen.SaldoContable = F('SaldoContable') - transferencia.monto
-        cuenta_destino.SaldoContable = F('SaldoContable') + transferencia.monto
+# def informe_transferencias(request, transferencia_id):
+#     transferencias = get_object_or_404(Transferencia, pk=transferencia_id)
 
-        transferencia.aprobada = True
+#     # Lógica para generar el informe (puedes utilizar bibliotecas como pandas para análisis de datos)
+#     transferencias = Transferencia.objects.all()
+#     return render(request, 'informe_transferencias.html', {'transferencias': transferencias})
 
-        cuenta_origen.save()
-        cuenta_destino.save()
-        transferencia.save()
+# def cancelar_transferencia(request, transferencia_id):
+#     transferencia = get_object_or_404(Transferencia, pk=transferencia_id)
 
-    return render(request, 'aprobar_transferencia.html', {'transferencia': transferencia})
+#     # Lógica para cancelar la transferencia
+#     if not transferencia.aprobada:
+#         # Actualizar saldo de cuenta de origen
+#         cuenta_origen = transferencia.cuenta_origen
+#         cuenta_origen.SaldoContable = F('SaldoContable') + transferencia.monto
+#         cuenta_origen.save()
 
-def informe_transferencias(request, transferencia_id):
-    transferencias = get_object_or_404(Transferencia, pk=transferencia_id)
+#         transferencia.delete()
 
-    # Lógica para generar el informe (puedes utilizar bibliotecas como pandas para análisis de datos)
-    transferencias = Transferencia.objects.all()
-    return render(request, 'informe_transferencias.html', {'transferencias': transferencias})
+#     return render(request, 'cancelar_transferencia.html', {'transferencia': transferencia})
 
-def cancelar_transferencia(request, transferencia_id):
-    transferencia = get_object_or_404(Transferencia, pk=transferencia_id)
+# def historial_saldo(request, transferencia_id):
+#     transferencia = get_object_or_404(Transferencia, pk=transferencia_id)
+#     transferencias = Transferencia.objects.all()
+#     # Obtén la fecha actual
+#     fecha_actual = datetime.now()
 
-    # Lógica para cancelar la transferencia
-    if not transferencia.aprobada:
-        # Actualizar saldo de cuenta de origen
-        cuenta_origen = transferencia.cuenta_origen
-        cuenta_origen.SaldoContable = F('SaldoContable') + transferencia.monto
-        cuenta_origen.save()
+#     # Define el rango de fechas para el historial (por ejemplo, últimos 30 días)
+#     fecha_inicio = fecha_actual - timedelta(days=30)
 
-        transferencia.delete()
+#     # Filtra las transferencias en el rango de fechas
+#     historial = Transferencia.objects.filter(fecha__range=(fecha_inicio, fecha_actual)).order_by('-fecha')
 
-    return render(request, 'cancelar_transferencia.html', {'transferencia': transferencia})
-
-def historial_saldo(request, transferencia_id):
-    transferencia = get_object_or_404(Transferencia, pk=transferencia_id)
-    transferencias = Transferencia.objects.all()
-    # Obtén la fecha actual
-    fecha_actual = datetime.now()
-
-    # Define el rango de fechas para el historial (por ejemplo, últimos 30 días)
-    fecha_inicio = fecha_actual - timedelta(days=30)
-
-    # Filtra las transferencias en el rango de fechas
-    historial = Transferencia.objects.filter(fecha__range=(fecha_inicio, fecha_actual)).order_by('-fecha')
-
-    return render(request, 'historial_saldo.html', {'historial': historial})
+#     return render(request, 'historial_saldo.html', {'historial': historial})

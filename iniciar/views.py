@@ -286,41 +286,6 @@ def detalle_cuenta(request, usuario_id):
     
     return redirect('custom_login')
 
-# from django.shortcuts import render, redirect
-# from django.contrib.sessions.models import Session
-# from django.utils import timezone
-# from datetime import timedelta
-
-# def detalle_cuenta(request, usuario_id):
-#     try:
-#         usuario = NuevoRegistro.objects.get(id=usuario_id)
-#         numero_cuenta = usuario.NumeroCuenta  # Obtener el valor de NumeroCuenta
-
-#         # Verifica si la sesión necesita ser renovada o si aún no existe
-#         session_key = request.session.session_key
-#         if not session_key:
-#             request.session.save()  # Guarda la sesión para que obtenga una clave
-#             session_key = request.session.session_key
-
-#         # Obtiene o crea la sesión actual del usuario
-#         session, created = Session.objects.get_or_create(session_key=session_key)
-
-#         # Renueva la sesión por 30 segundos más desde ahora
-#         session.expire_date = timezone.now() + timedelta(seconds=30)
-#         session.save()
-
-#         now = datetime.now()
-#         context = {
-#             'usuario': usuario,
-#             'numero_cuenta': numero_cuenta,  # Agregar numero_cuenta al contexto
-#             'fecha_actual': now,
-#         }
-#         return render(request, 'detalle_cuenta.html', context)
-#     except NuevoRegistro.DoesNotExist:
-#         messages.error(request, 'Usuario no encontrado')
-    
-#     return redirect('custom_login')
-
 
 
 @login_required
