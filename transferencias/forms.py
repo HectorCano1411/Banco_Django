@@ -1,11 +1,18 @@
 from django import forms
 from .models import Transferencia
 
+
 class TransferenciaForm(forms.ModelForm):
     class Meta:
         model = Transferencia
-        fields = ['cuenta_origen', 'cuenta_destino', 'monto', 'descripcion', 'aprobada', 'referencia', 'detalles', 'tasa_interes', 'motivo_rechazo']
-
+        fields = ['cuenta_origen', 'cuenta_destino', 'monto', 'aprobada', 'referencia', 'tasa_interes', 'descripcion']
+        widgets = {
+            'monto': forms.NumberInput(attrs={'class': 'form-control', 'required': True}),
+            'aprobada': forms.CheckboxInput(attrs={'class': 'form-check-input', 'required': True}),
+            'referencia': forms.TextInput(attrs={'class': 'form-control', 'required': True}),
+            'tasa_interes': forms.NumberInput(attrs={'class': 'form-control', 'required': True}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'style': 'overflow-y: scroll;', 'required': True, 'rows': 3, 'cols': 30}),
+        }
     def clean_cuenta_destino(self):
         cuenta_origen = self.cleaned_data['cuenta_origen']
         cuenta_destino = self.cleaned_data['cuenta_destino']
@@ -25,14 +32,6 @@ class TransferenciaForm(forms.ModelForm):
 
         return monto
 
-    def clean_referencia(self):
-        referencia = self.cleaned_data['referencia']
-
-        # Validación: La referencia solo puede contener letras y números
-        if not referencia.isalnum():
-            raise forms.ValidationError("La referencia solo puede contener letras y números.")
-
-        return referencia
 
     def clean_tasa_interes(self):
         tasa_interes = self.cleaned_data['tasa_interes']

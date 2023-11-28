@@ -114,7 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-es'
 
 TIME_ZONE = 'UTC'
 
@@ -138,7 +138,7 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'iniciar/static/'), )
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_AGE = 120    
-
+LOGIN_URL = 'custom_login'
 # SESSION_SAVE_EVERY_REQUEST = True
 # SESSION_COOKIE_SECURE = True  # Solo se envía la cookie a través de conexiones seguras (HTTPS)
 

@@ -292,6 +292,7 @@
       </tbody>
     </table>
   </div>
+  {% if user.is_authenticated and user.is_staff %}
   <div class="container mt-3">
     <a
       href="{% url 'crear_transferencia' %}"
@@ -311,6 +312,8 @@
       Realizar Transferencia
     </a>
   </div>
+  {% endif %}
+  
   <div class="container mt-5">
     <table class="table table-bordered table-hover">
       <tr>
